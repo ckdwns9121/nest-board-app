@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException, ParseIntPipe } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { User } from 'src/auth/user.entity';
 import { Repository } from 'typeorm';
 import { BoardStatus } from './board-status.enum';
 import { Board } from './board.entity';
@@ -24,12 +25,16 @@ export class BoardsService {
     return board;
   }
 
-  async createBoard(createBoardDtd: CreateBoardDto): Promise<Board> {
+  async createBoard(
+    createBoardDtd: CreateBoardDto,
+    user: User,
+  ): Promise<Board> {
     const { title, description } = createBoardDtd;
     const board = this.boardRepository.create({
       title,
       description,
       status: BoardStatus.PUBLIC,
+      user,
     });
 
     await this.boardRepository.save(board);
