@@ -21,12 +21,17 @@ import { CreateBoardDto } from './dto/create-board.dto';
 import { BoardStatusValidationPipe } from './pipes/board-status-validation.pipe';
 
 @Controller('boards')
-@UseGuards(AuthGuard())
 export class BoardsController {
   constructor(private readonly boardService: BoardsService) {}
 
   @Get()
-  getBoard(): Promise<Board[]> {
+  @UseGuards(AuthGuard())
+  getUserBoards(@GetUser() user: User): Promise<Board[]> {
+    return this.boardService.getUserBoards(user);
+  }
+
+  @Get('all')
+  getBoards(): Promise<Board[]> {
     return this.boardService.getBoards();
   }
 
@@ -37,6 +42,7 @@ export class BoardsController {
 
   @Post()
   @UsePipes(ValidationPipe)
+  @UseGuards(AuthGuard())
   createBoard(
     @Body() createBoardDto: CreateBoardDto,
     @GetUser() user: User,
